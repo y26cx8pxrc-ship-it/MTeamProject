@@ -10,6 +10,8 @@ SLOT_LIMIT = 5  # максимум мест на один слот
 if not BOT_TOKEN:
     raise ValueError("Переменная BOT_TOKEN не найдена в .env")
 
-ADMINS = [
-    123456789,  # <-- сюда свой Telegram ID
-]
+env_array_str = os.getenv('ADMINS', "")
+if env_array_str:
+    ADMINS = list(map(int, env_array_str.split(',')))
+else:
+    ADMINS = []
