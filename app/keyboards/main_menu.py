@@ -1,7 +1,9 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from app.config import ADMINS
 
-main_keyboard = ReplyKeyboardMarkup(
-    keyboard=[
+
+def get_main_menu(user_id: int):
+    keyboard = [
         [
             KeyboardButton(text="Забронировать место 📚")
         ],
@@ -11,7 +13,17 @@ main_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text="Помощь ℹ️")
         ]
-    ],
-    resize_keyboard=True,
-    input_field_placeholder="Что будем делать ?"
-)
+    ]
+
+    if user_id in ADMINS:
+        keyboard.append(
+            [
+                KeyboardButton(text="Админка ⚙️")
+            ]
+        )
+
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard,
+        resize_keyboard=True,
+        input_field_placeholder="Что будем делать?"
+    )

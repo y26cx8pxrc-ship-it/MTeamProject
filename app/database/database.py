@@ -96,3 +96,44 @@ async def cancel_booking(
         )
 
         await db.commit()
+
+async def get_all_bookings():
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        cursor = await db.execute(
+            """
+            SELECT bookings.id, users.full_name, bookings.date, bookings.time
+            FROM bookings
+            JOIN users ON bookings.user_id = users.id
+            ORDER BY bookings.date, bookings.time
+            """
+        )
+        return await cursor.fetchall()
+
+
+async def get_today_bookings(today: str):
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        cursor = await db.execute(
+            """
+            SELECT bookings.id, users.full_name, bookings.date, bookings.time
+            FROM bookings
+            JOIN users ON bookings.user_id = users.id
+            WHERE bookings.date = ?
+            ORDER BY bookings.time
+            """,
+            (today,)
+        )
+        return await cursor.fetchall()
+    
+async def count_bookings(date: str, time: str) -> int:
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        cursor = await db.execute(
+            """
+            SELECT COUNT(*)
+            FROM bookings
+            WHERE date = ? AND time = ?
+            """,
+            (date, time)
+        )
+
+        result = await cursor.fetchone()
+        return result[0] if result else 0

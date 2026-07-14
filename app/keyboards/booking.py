@@ -28,7 +28,15 @@ def get_date_keyboard():
     )
 
 
-def get_time_keyboard():
+from app.database.database import count_bookings
+from app.config import SLOT_LIMIT
+
+
+from app.database.database import count_bookings
+from app.config import SLOT_LIMIT
+
+
+async def get_time_keyboard(date: str):
     times = [
         "09:00",
         "10:00",
@@ -40,11 +48,20 @@ def get_time_keyboard():
     keyboard = []
 
     for time in times:
+        count = await count_bookings(date, time)
+
+        text = f"{time} ({count}/{SLOT_LIMIT})"
+
+        if count >= SLOT_LIMIT:
+            callback = "full"
+        else:
+            callback = f"time_{time}"
+
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    text=time,
-                    callback_data=f"time_{time}"
+                    text=text,
+                    callback_data=callback
                 )
             ]
         )
@@ -76,6 +93,23 @@ def get_cancel_keyboard(bookings):
                 InlineKeyboardButton(
                     text=f"{date} {time} ❌",
                     callback_data=f"cancel_{booking_id}"
+                )
+            ]
+        )
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=keyboard
+    )
+
+def get_admin_cancel_keyboard(bookings):
+    keyboard = []
+
+    for booking_id, user, date, time in bookings:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    text=f"{user} | {date} {time} ❌",
+                    callback_data=f"admin_cancel_{booking_id}"
                 )
             ]
         )

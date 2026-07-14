@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from app.config import ADMINS
 
 from app.keyboards.booking import (
     get_date_keyboard,
@@ -55,4 +56,15 @@ async def my_bookings(message: Message):
 async def help_command(message: Message):
     await message.answer(
         "Если возникли вопросы, обратись к администратору."
+    )
+
+@router.message(F.text == "Админка ⚙️")
+async def admin_panel(message: Message):
+    if message.from_user.id not in ADMINS:
+        return
+
+    await message.answer(
+        "Админ-панель:\n\n"
+        "1. /all_bookings\n"
+        "2. /today_bookings"
     )
