@@ -273,6 +273,6 @@ python bot.py
 
  🧠 Авторы
 
-Команда MTeamProject
+Команда MTeam
 
 ---
